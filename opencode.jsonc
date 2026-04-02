@@ -1,0 +1,43 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "context7": {
+      "type": "remote",
+      "url": "https://mcp.context7.com/mcp",
+      "headers": {
+        "CONTEXT7_API_KEY": "ctx7sk-cf6c79e2-9ff1-46bb-b2f0-846c08d547fa"
+      },
+      "enabled": true
+    },
+    "exa": {
+      "type": "remote",
+      "url": "https://mcp.exa.ai/mcp?exaApiKey=f5805ef7-9ce1-4b05-9625-e65ea1970d8e&tools=web_search_exa,web_search_advanced_exa,get_code_context_exa,crawling_exa",
+      "enabled": true
+    },
+    "supabase": {
+      "type": "remote",
+      "url": "https://mcp.supabase.com/mcp?project_ref=zgfazahppfemaalnkpju&features=docs%2Caccount%2Cdatabase%2Cdebugging%2Cdevelopment%2Cfunctions%2Cbranching%2Cstorage",
+      "enabled": true
+    }
+  
+  },
+  "permission": {
+    "bash": "ask",
+    "write": "allow",
+    "websearch": "allow"
+  },
+  "provider": {
+  "openrouter": {
+    "models": {
+      "qwen/qwen3.6-plus-preview:free": {
+        "variants": {
+          "low": { "reasoningEffort": "low" },
+          "medium": { "reasoningEffort": "medium" },
+          "high": { "reasoningEffort": "high" }
+        }
+      }
+    }
+  }
+}
+
+}

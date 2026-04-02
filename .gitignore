@@ -1,0 +1,39 @@
+﻿# Dependencies
+node_modules/
+.pnpm-store/
+
+# Next.js
+.next/
+out/
+dist/
+next-env.d.ts
+*.tsbuildinfo
+
+# Environment
+.env.local
+.env*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# OpenCode
+.opencode/
+
+# Agents (skills are local, don't commit)
+.agents/
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Supabase (local config, not needed for remote project)
+supabase/.branches/
+supabase/config.toml
