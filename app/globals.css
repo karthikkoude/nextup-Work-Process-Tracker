@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 /* ============================================
-   NestUp Design Tokens — NESTUP_UI_WAVE.md
+   NestUp Design Tokens -- NESTUP_UI_WAVE.md
    Structured. Clear. Purposeful.
    ============================================ */
 
@@ -31,7 +31,7 @@
   --color-ink-faint: #94a3b8;
   --color-ink-inverse: #f8fafc;
 
-  /* Status colors — ONLY for work item status */
+  /* Status colors -- ONLY for work item status */
   --color-status-blocked: #ef4444;
   --color-status-blockedBg: #fef2f2;
   --color-status-blockedBorder: #fecaca;
@@ -42,7 +42,7 @@
   --color-status-doneBg: #f0fdf4;
   --color-status-doneBorder: #bbf7d0;
 
-  /* Priority colors — muted, not as loud as status */
+  /* Priority colors -- muted, not as loud as status */
   --color-priority-critical: #dc2626;
   --color-priority-criticalBg: #fef2f2;
   --color-priority-criticalBorder: #fecaca;
@@ -58,7 +58,7 @@
   --color-priority-lowBg: #f0fdf4;
   --color-priority-lowBorder: #bbf7d0;
 
-  /* Primary action (teal — CTAs and active states only) */
+  /* Primary action (teal -- CTAs and active states only) */
   --color-brand-50: #f0fdfa;
   --color-brand-100: #ccfbf1;
   --color-brand-200: #99f6e4;

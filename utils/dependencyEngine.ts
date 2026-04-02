@@ -1,5 +1,5 @@
 /**
- * Dependency Engine — Core logic for work item dependency resolution.
+ * Dependency Engine -- Core logic for work item dependency resolution.
  *
  * Handles:
  *  - Blocking status computation (isItemBlocked)
@@ -39,7 +39,7 @@ export function isItemBlocked(itemId: string, items: WorkItem[], deps: Dependenc
 }
 
 /**
- * Detects bottleneck items — work items that are blocking multiple downstream tasks
+ * Detects bottleneck items -- work items that are blocking multiple downstream tasks
  * and are not yet complete.
  *
  * A bottleneck is defined as an item that:
@@ -70,8 +70,8 @@ export function detectBottlenecks(items: WorkItem[], deps: Dependency[]): WorkIt
  * then performs DFS from each node to detect back edges (cycles).
  *
  * Returns:
- *  - hasCycle: boolean — whether a cycle was detected
- *  - cyclePath: string — the path of the cycle (UUIDs joined by ' → '), empty if no cycle
+ *  - hasCycle: boolean -- whether a cycle was detected
+ *  - cyclePath: string -- the path of the cycle (UUIDs joined by ' → '), empty if no cycle
  *
  * Edge cases handled:
  *  - Self-dependency (from_id === to_id) → detected as cycle
@@ -144,7 +144,7 @@ export function hasCycle(
  *  3. If status changed (blocked ↔ in-progress), recursively cascades to THAT item's successors
  *  4. Handles BOTH forward progress (unblocking) AND backward progress (re-blocking)
  *
- * This is a recursive, multi-level cascade — changes propagate through the entire
+ * This is a recursive, multi-level cascade -- changes propagate through the entire
  * dependency chain, not just one level.
  *
  * Returns a new array of WorkItems with updated statuses.
@@ -202,7 +202,7 @@ export function cascadeStatusUpdate(
  *
  * Ranks members by:
  *  1. Number of matching skills (descending)
- *  2. Current workload score (ascending — prefer less loaded members)
+ *  2. Current workload score (ascending -- prefer less loaded members)
  *
  * Only returns members with at least one matching skill.
  * Returns empty array if no members have matching skills.

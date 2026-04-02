@@ -1,8 +1,8 @@
-# NestUp Work Process Tracker — Master Project Context
+# NestUp Work Process Tracker -- Master Project Context
 
 > **HOW TO USE THIS FILE**
-> Every OpenCode agent session — regardless of mode (Build, Plan, Surgical, Codereview,
-> Debug, FeatureHealth) — must read this file completely before writing any code.
+> Every OpenCode agent session -- regardless of mode (Build, Plan, Surgical, Codereview,
+> Debug, FeatureHealth) -- must read this file completely before writing any code.
 > This file defines WHAT to build, WHY each decision was made, and HOW agents
 > coordinate without conflicting. Never modify Section 07 (Shared Contracts) mid-build.
 
@@ -11,10 +11,10 @@
 ## 01 · What Is This Project?
 
 NestUp is a **Work Management SaaS company**. This is their intern assignment:
-build a **Work Process Tracker** — a web app where admins manage tasks with
+build a **Work Process Tracker** -- a web app where admins manage tasks with
 dependency chains, and members update their own task progress.
 
-The unique intellectual challenge is the **dependency engine** — tasks chain together
+The unique intellectual challenge is the **dependency engine** -- tasks chain together
 where Task B cannot start until Task A reaches a certain progress percentage. The system
 auto-blocks and auto-unblocks tasks as members update progress. This logic is the
 entire point of the assignment.
@@ -46,13 +46,13 @@ Unauthorized access redirects to `/login`.
 
 ---
 
-## 03 · Tech Stack — Decisions and Reasons
+## 03 · Tech Stack -- Decisions and Reasons
 
 | Tool | Version | Why |
 |------|---------|-----|
 | Next.js | 14 (App Router) | Developer's existing expertise. App Router gives clean middleware-based route protection. |
 | TypeScript | 5.x strict mode | Strict typing prevents runtime errors in dependency logic. No `any` allowed. |
-| Supabase Auth | Latest | Real role-based auth — not fake in-memory. Impresses founder vs prototype feel. |
+| Supabase Auth | Latest | Real role-based auth -- not fake in-memory. Impresses founder vs prototype feel. |
 | Supabase PostgreSQL | Latest | Persistent data with real foreign keys and RLS policies per role. |
 | Supabase Realtime | Latest | Bonus: live dashboard updates when member changes progress. |
 | Tailwind CSS | 3.x | Developer's existing expertise. No custom CSS files needed. |
@@ -60,11 +60,11 @@ Unauthorized access redirects to `/login`.
 | @dagrejs/dagre | Latest | Auto-layout for React Flow. Arranges nodes left-to-right by dependency chain. |
 
 ### Why NOT These Tools
-- **Redux** — boilerplate overkill. Server state lives in Supabase, no complex client state needed.
-- **Zustand** — valid but in-memory only. Supabase is real persistence and more impressive for demo.
-- **Next.js Pages Router** — App Router middleware is cleaner for role-based protection.
-- **D3.js** — React Flow already ships minimap, zoom, controls, and layout. D3 would take 10× longer.
-- **Supabase Edge Functions for cascade** — adds deployment complexity and demo risk. Use client-side cascade instead (simpler, easier to explain verbally).
+- **Redux** -- boilerplate overkill. Server state lives in Supabase, no complex client state needed.
+- **Zustand** -- valid but in-memory only. Supabase is real persistence and more impressive for demo.
+- **Next.js Pages Router** -- App Router middleware is cleaner for role-based protection.
+- **D3.js** -- React Flow already ships minimap, zoom, controls, and layout. D3 would take 10× longer.
+- **Supabase Edge Functions for cascade** -- adds deployment complexity and demo risk. Use client-side cascade instead (simpler, easier to explain verbally).
 
 ---
 
@@ -115,9 +115,9 @@ nestup-tracker/
 │   ├── supabase-browser.ts             ← Browser client (createBrowserClient)
 │   └── supabase-server.ts              ← Server client (createServerClient + cookies)
 ├── types/
-│   └── index.ts                        ← All TypeScript interfaces — SHARED CONTRACT
+│   └── index.ts                        ← All TypeScript interfaces -- SHARED CONTRACT
 ├── utils/
-│   └── dependencyEngine.ts             ← Pure algorithm functions — MOST CRITICAL FILE
+│   └── dependencyEngine.ts             ← Pure algorithm functions -- MOST CRITICAL FILE
 ├── components/
 │   ├── auth/
 │   │   └── LoginForm.tsx
@@ -148,7 +148,7 @@ nestup-tracker/
 
 ---
 
-## 07 · Shared Contracts — READ-ONLY FOR ALL AGENTS
+## 07 · Shared Contracts -- READ-ONLY FOR ALL AGENTS
 
 > **RULE:** These are the source of truth. No agent may change these values
 > during any build wave. If a file needs different values, the agent must
@@ -161,7 +161,7 @@ export type UserRole = 'admin' | 'member'
 
 export type Priority = 'low' | 'medium' | 'high' | 'critical'
 
-// Exactly 3 values — not 4. Never add 'pending' or any other value.
+// Exactly 3 values -- not 4. Never add 'pending' or any other value.
 export type WorkStatus = 'blocked' | 'in-progress' | 'done'
 
 // full always has threshold=100. partial has admin-defined threshold.
@@ -281,11 +281,11 @@ Item B: "Frontend Development"     alex     progress=0   status=in-progress  pri
         (will be unblocked because A=60 already >= threshold 50)
 Item C: "API Integration"          carlos   progress=0   status=blocked      priority=critical
 Item D: "Data Pipeline Setup"      priya    progress=30  status=in-progress  priority=medium
-        (no dependencies — isolated item)
+        (no dependencies -- isolated item)
 Item E: "QA Testing"               alex     progress=0   status=blocked      priority=high
 Item F: "Performance Optimization" carlos   progress=0   status=blocked      priority=medium
 Item G: "Deployment Prep"          carlos   progress=0   status=blocked      priority=low
-        (used for circular rejection demo — do NOT add any dependency for G in seed)
+        (used for circular rejection demo -- do NOT add any dependency for G in seed)
 ```
 
 ### Dependencies to Create
@@ -293,22 +293,22 @@ Item G: "Deployment Prep"          carlos   progress=0   status=blocked      pri
 A → B : partial, threshold=50   (B unblocks when A >= 50%. A=60% so B is in-progress at load)
 B → C : full,    threshold=100  (C only unblocks when B=100%)
 C → E : full,    threshold=100  (E only unblocks when C=100%)
-C → F : full,    threshold=100  (F only unblocks when C=100% — makes C a bottleneck: blocks E+F)
+C → F : full,    threshold=100  (F only unblocks when C=100% -- makes C a bottleneck: blocks E+F)
 ```
 
 > **Demo chain to verify on load:**
 > A(60%) → B should be `in-progress` | C, E, F should be `blocked` | D independent.
 > Item C is the bottleneck (blocks both E and F).
-> Item G has zero dependencies — use it to demo circular rejection by trying G → A.
+> Item G has zero dependencies -- use it to demo circular rejection by trying G → A.
 
 ---
 
-## 10 · Dependency Engine — Algorithm Specification
+## 10 · Dependency Engine -- Algorithm Specification
 
 **File:** `utils/dependencyEngine.ts`
 **Agent mode:** Surgical only. Build agent must never touch this file.
 **Rule:** Pure functions ONLY. Zero Supabase imports. Zero React imports.
-Zero side effects. Input arrays are never mutated — always return new arrays.
+Zero side effects. Input arrays are never mutated -- always return new arrays.
 
 ### Function 1: hasCycle
 ```
@@ -434,9 +434,9 @@ Logic flow:
 - On submit: Supabase signInWithPassword()
 - On success: fetch role from public.users, redirect accordingly
 - Show inline error (not toast) if credentials wrong
-- No loading spinner on button — disable button + change text to "Signing in..."
+- No loading spinner on button -- disable button + change text to "Signing in..."
 
-### /admin — AdminDashboard
+### /admin -- AdminDashboard
 Must show all of these:
 
 **KPI Row (top)**
@@ -447,7 +447,7 @@ Must show all of these:
 
 **Bottleneck Banner**
 - Only visible when detectBottlenecks() returns items
-- Red warning — lists item titles that are blocking multiple others
+- Red warning -- lists item titles that are blocking multiple others
 - Dismissible per session
 
 **Process Flow Diagram (React Flow)**
@@ -486,7 +486,7 @@ Must show all of these:
   Show the full cycle path reconstructed from DFS traversal.
 - If no cycle → INSERT to Supabase → run cascadeStatusUpdate() → refresh all items
 
-### /member — MemberDashboard
+### /member -- MemberDashboard
 Must show all of these:
 
 **Your Tasks section**
@@ -512,7 +512,7 @@ Must show all of these:
 
 ---
 
-## 13 · Cascade Trigger — Client-Side Decision
+## 13 · Cascade Trigger -- Client-Side Decision
 
 **Decision:** Cascade runs client-side after every Supabase mutation. Not Edge Functions.
 
@@ -537,9 +537,9 @@ Never optimistically update UI before Supabase confirms step 2.
 
 | Feature | Where | Implementation Note |
 |---------|-------|---------------------|
-| Auto-assign suggestion | WorkItemForm | suggestAssignees() already in dependencyEngine.ts — just wire to UI |
+| Auto-assign suggestion | WorkItemForm | suggestAssignees() already in dependencyEngine.ts -- just wire to UI |
 | Overload alert badge | WorkloadTable + MemberDashboard | getWorkloadScore() > 15 → red badge |
-| Supabase Realtime | AdminDashboard | Subscribe to work_items INSERT/UPDATE — refresh diagram live |
+| Supabase Realtime | AdminDashboard | Subscribe to work_items INSERT/UPDATE -- refresh diagram live |
 | Estimated completion | TaskCard | Store progress snapshots with timestamps. Calculate daily avg rate. Show "Est. X days" |
 
 ---
@@ -551,14 +551,14 @@ Never optimistically update UI before Supabase confirms step 2.
 > Gate = Codereview agent reviews all files from that wave + `npx tsc --noEmit` passes.
 
 ```
-WAVE 1 — Parallel (zero shared files)
+WAVE 1 -- Parallel (zero shared files)
 ├── Plan agent   → supabase/schema.sql + supabase/seed.sql
 ├── Plan agent   → types/index.ts (use Section 07 contracts exactly)
 └── Build agent  → lib/supabase-browser.ts + lib/supabase-server.ts
 
   GATE 1: Codereview reviews all 4 files. tsc --noEmit passes. Commit.
 
-WAVE 2 — Solo (most critical file, no distractions)
+WAVE 2 -- Solo (most critical file, no distractions)
 └── Surgical agent → utils/dependencyEngine.ts
     Uses: types/index.ts (read-only)
     Does NOT touch: any component, any Supabase call
@@ -567,7 +567,7 @@ WAVE 2 — Solo (most critical file, no distractions)
           Verify: threshold=0 case, cycle detection, cascade BFS order.
           tsc --noEmit passes. Commit.
 
-WAVE 3 — Parallel (all read engine + types, none modify them)
+WAVE 3 -- Parallel (all read engine + types, none modify them)
 ├── Build agent  → middleware.ts + app/(auth)/login/
 ├── Build agent  → components/admin/* (WorkItemForm, DependencyModal,
 │                  WorkloadTable, BottleneckBanner)
@@ -577,7 +577,7 @@ WAVE 3 — Parallel (all read engine + types, none modify them)
   GATE 3: Codereview all components. Check: no engine reimplementation,
           no duplicate logic, correct import paths. tsc --noEmit passes. Commit.
 
-WAVE 4 — Solo (wires everything together)
+WAVE 4 -- Solo (wires everything together)
 └── Build agent  → app/admin/page.tsx + app/member/page.tsx
                    + ProcessFlowDiagram.tsx + app/page.tsx + app/layout.tsx
     Uses: all components from Wave 3 (read-only)
@@ -585,7 +585,7 @@ WAVE 4 — Solo (wires everything together)
   GATE 4: Full app runs. Demo checklist in Section 17 verified manually.
           Debug agent fixes any runtime errors. Commit.
 
-WAVE 5 — Optional bonus (only if time permits)
+WAVE 5 -- Optional bonus (only if time permits)
 └── Build agent  → Supabase Realtime subscription + bonus features
 ```
 
@@ -599,12 +599,12 @@ WAVE 5 — Optional bonus (only if time permits)
 | **Surgical** | dependencyEngine.ts only | Pure functions, no imports from Supabase or React |
 | **Build** | UI components, pages, routing, Supabase client | Use Context7 before any route or hook |
 | **Codereview** | Every gate checkpoint | Check contracts match Section 07, no engine reimplementation |
-| **FeatureHealth** | Gate 2 only — dependency engine | Test all 6 scenarios in Section 17 |
-| **Debug** | Gate 4 — runtime errors | Fix only the specific error, do not refactor working code |
+| **FeatureHealth** | Gate 2 only -- dependency engine | Test all 6 scenarios in Section 17 |
+| **Debug** | Gate 4 -- runtime errors | Fix only the specific error, do not refactor working code |
 
 ---
 
-## 17 · Demo Day Checklist — Every Item Must Pass
+## 17 · Demo Day Checklist -- Every Item Must Pass
 
 Run through these manually before demo. FeatureHealth agent verifies logic items.
 
@@ -640,20 +640,20 @@ Run through these manually before demo. FeatureHealth agent verifies logic items
 
 ---
 
-## 18 · Demo Questions — Know These Cold
+## 18 · Demo Questions -- Know These Cold
 
 **Q: Explain the dependency algorithm step by step.**
 > When a new dependency A→B is proposed, I run DFS starting from B through all
-> its successors. If the traversal ever reaches A, a cycle would form — I reject
+> its successors. If the traversal ever reaches A, a cycle would form -- I reject
 > immediately and show the cycle path. For cascade updates: when any item's progress
 > changes, I run BFS from that item through all successors and re-evaluate each
 > one's blocked status using the threshold comparison. Both run in O(V+E) time.
 
 **Q: What breaks if threshold is set to 0?**
 > Without special handling, a threshold of 0 would permanently block the successor
-> because predecessor.progress starts at 0, and 0 < 0 is false — actually it passes.
+> because predecessor.progress starts at 0, and 0 < 0 is false -- actually it passes.
 > But threshold=0 is semantically meaningless as a dependency, so we treat it as
-> "never blocks" explicitly in isItemBlocked() — if threshold===0, skip that dep.
+> "never blocks" explicitly in isItemBlocked() -- if threshold===0, skip that dep.
 > This prevents admin mistakes from breaking the dependency chain.
 
 **Q: What if a member is overloaded?**
@@ -661,16 +661,16 @@ Run through these manually before demo. FeatureHealth agent verifies logic items
 > per active task. If total exceeds 15, a red badge shows on their name everywhere.
 > The auto-assign suggestion also deprioritizes overloaded members automatically.
 
-**Q: Partial vs full — what's actually different?**
-> Only the threshold value. Full always has threshold=100 — predecessor must be
-> completely done. Partial has an admin-defined threshold — work can start earlier.
+**Q: Partial vs full -- what's actually different?**
+> Only the threshold value. Full always has threshold=100 -- predecessor must be
+> completely done. Partial has an admin-defined threshold -- work can start earlier.
 > Both use the exact same isItemBlocked() comparison: progress < threshold.
 > The type field is essentially metadata for the UI label and for forcing threshold=100.
 
 **Q: How would this scale to 10,000 tasks?**
 > The current client-side cascade is fine for small teams. At scale, I'd move the
 > cascade to a Supabase Database Function triggered on work_items UPDATE, so it runs
-> server-side in PostgreSQL using a recursive CTE — same BFS logic but in SQL.
+> server-side in PostgreSQL using a recursive CTE -- same BFS logic but in SQL.
 > The React Flow diagram would need virtualization (only render visible nodes) and
 > pagination or filtering by team/sprint.
 
@@ -679,16 +679,16 @@ Run through these manually before demo. FeatureHealth agent verifies logic items
 ## 19 · Hard Rules for Every Agent Session
 
 1. Read this file completely before writing any code
-2. Section 07 (Shared Contracts) is read-only — never modify WorkStatus, threshold rules, or scoring formula
-3. `dependencyEngine.ts` functions must be pure — no Supabase, no React, no mutation
-4. Circular detection error must display inline in DependencyModal — not console.log, not toast
-5. Cascade runs client-side (Section 13 pattern) — not Edge Functions
+2. Section 07 (Shared Contracts) is read-only -- never modify WorkStatus, threshold rules, or scoring formula
+3. `dependencyEngine.ts` functions must be pure -- no Supabase, no React, no mutation
+4. Circular detection error must display inline in DependencyModal -- not console.log, not toast
+5. Cascade runs client-side (Section 13 pattern) -- not Edge Functions
 6. Use Context7 MCP before writing any Supabase query or Next.js route pattern
 7. Use Exa MCP only for React Flow / dagre layout examples
 8. Never use `any` TypeScript type in types/index.ts or dependencyEngine.ts
-9. Never reimplement engine logic inside components — always import from utils/dependencyEngine.ts
+9. Never reimplement engine logic inside components -- always import from utils/dependencyEngine.ts
 10. Never start Wave N+1 before Gate N passes (tsc --noEmit clean + Codereview done)
-11. Do not use localStorage or sessionStorage — Supabase handles session persistence
+11. Do not use localStorage or sessionStorage -- Supabase handles session persistence
 12. Seed data credentials are: admin@nestup.com and member emails, all password Demo1234!
 
 ---
@@ -741,21 +741,21 @@ The founder will say: *"Walk me through the UI and explain every decision you ma
 Know these answers before demo day.
 
 **Why is the process flow diagram the centerpiece of the admin dashboard?**
-> The entire system is about dependency chains — so the most important thing an admin
+> The entire system is about dependency chains -- so the most important thing an admin
 > needs to see is the chain itself. Putting the graph front and center makes the
 > system's state immediately scannable without reading any table.
 
 **Why node colors red/amber/green?**
-> Universal status language — no legend needed. Admin sees blocked items (red) at a
+> Universal status language -- no legend needed. Admin sees blocked items (red) at a
 > glance without reading text. This matters when you have 20+ items on screen.
 
 **Why dashed edges for partial, solid for full?**
-> Dashed visually communicates "not a hard wall" — work can start partway through.
+> Dashed visually communicates "not a hard wall" -- work can start partway through.
 > Solid communicates a hard dependency. This is a standard graph convention.
 
 **Why is the circular rejection an inline banner, not a toast?**
 > A toast disappears after 3 seconds. This is a rejected action the admin must
-> understand — the cycle path needs to be readable and persistent until dismissed.
+> understand -- the cycle path needs to be readable and persistent until dismissed.
 > Inline banners are for errors that require user comprehension, not just awareness.
 
 **Why does the member dashboard show "Blocking Others"?**
@@ -763,7 +763,7 @@ Know these answers before demo day.
 > creates accountability and urgency without the admin having to chase them.
 
 **Why is the progress update a slider and not a text input?**
-> Progress is a continuous value — sliders communicate that naturally. A text input
+> Progress is a continuous value -- sliders communicate that naturally. A text input
 > suggests exact precision which doesn't match how real progress works. Sliders
 > are also faster to update on mobile.
 
@@ -771,25 +771,25 @@ Know these answers before demo day.
 > For a demo with 6-10 items, client-side is instant and fully debuggable in the
 > browser. A database trigger adds deployment complexity and a black box I can't
 > show or explain during the demo. At production scale I'd move it to PostgreSQL
-> recursive CTE — I can explain exactly how that would work.
+> recursive CTE -- I can explain exactly how that would work.
 
 **Why Supabase over a custom Express backend?**
 > Supabase gives me real auth, real RLS policies, and real persistence in under
 > an hour. A custom backend would take the entire 48 hours just to set up auth
-> correctly. Using Supabase let me focus on the actual challenge — the dependency logic.
+> correctly. Using Supabase let me focus on the actual challenge -- the dependency logic.
 
 ---
 
-## 22 · Prompt Guide — Exactly How to Talk to Each Agent
+## 22 · Prompt Guide -- Exactly How to Talk to Each Agent
 
 > Use these prompts verbatim or as close as possible.
 > Always start every session with: "Read NESTUP_PROJECT.md completely, then..."
 
 ---
 
-### WAVE 1 — Plan Agent (Schema + Types)
+### WAVE 1 -- Plan Agent (Schema + Types)
 
-**Session 1 — Schema:**
+**Session 1 -- Schema:**
 ```
 Read NESTUP_PROJECT.md completely, then:
 Use Context7 MCP to look up the exact @supabase/ssr Next.js 14 schema
@@ -799,7 +799,7 @@ After writing, verify: does this schema support all 5 feature areas in Section 0
 of the PDF requirements? Report any gaps before finishing.
 ```
 
-**Session 2 — Seed Data:**
+**Session 2 -- Seed Data:**
 ```
 Read NESTUP_PROJECT.md completely, then:
 Write supabase/seed.sql using the spec in Section 09. Use Supabase auth
@@ -809,18 +809,18 @@ bottleneck because it blocks both E and F? Show your verification logic
 before writing the final SQL.
 ```
 
-**Session 3 — Types:**
+**Session 3 -- Types:**
 ```
 Read NESTUP_PROJECT.md completely, then:
 Write types/index.ts using EXACTLY the interfaces in Section 07 Shared Contracts.
 Do not add fields, do not change type names, do not add extra status values.
-This file is a contract — every other file depends on it. Run tsc --noEmit
+This file is a contract -- every other file depends on it. Run tsc --noEmit
 after writing and fix any errors before finishing.
 ```
 
 ---
 
-### GATE 1 — Codereview Agent
+### GATE 1 -- Codereview Agent
 
 ```
 Read NESTUP_PROJECT.md completely, then:
@@ -829,19 +829,19 @@ Review these files against Section 07 Shared Contracts and Section 08:
 - supabase/seed.sql
 - types/index.ts
 Check: Are all field names in schema.sql identical to the TypeScript interfaces?
-Are all 3 WorkStatus values present — exactly 'blocked', 'in-progress', 'done'?
+Are all 3 WorkStatus values present -- exactly 'blocked', 'in-progress', 'done'?
 Does seed data match the chain spec in Section 09? Does tsc --noEmit pass?
 Report PASS or FAIL per file with specific line numbers for any issues.
 ```
 
 ---
 
-### WAVE 2 — Surgical Agent (Dependency Engine)
+### WAVE 2 -- Surgical Agent (Dependency Engine)
 
 ```
 Read NESTUP_PROJECT.md completely, then:
 Read types/index.ts. Now implement utils/dependencyEngine.ts.
-Build all 6 functions defined in Section 10 — hasCycle, isItemBlocked,
+Build all 6 functions defined in Section 10 -- hasCycle, isItemBlocked,
 cascadeStatusUpdate, detectBottlenecks, getWorkloadScore, suggestAssignees.
 Rules that cannot be broken:
 - Pure functions only. Zero Supabase imports. Zero React imports.
@@ -857,7 +857,7 @@ cascadeStatusUpdate return for Item B's status?" Verify it returns 'in-progress'
 
 ---
 
-### GATE 2 — FeatureHealth Agent
+### GATE 2 -- FeatureHealth Agent
 
 ```
 Read NESTUP_PROJECT.md completely, then:
@@ -876,24 +876,24 @@ For any FAIL, identify exact line in dependencyEngine.ts causing the issue.
 
 ---
 
-### WAVE 3 — Build Agent (3 Parallel Sessions)
+### WAVE 3 -- Build Agent (3 Parallel Sessions)
 
-**Session A — Supabase Client + Middleware:**
+**Session A -- Supabase Client + Middleware:**
 ```
 Read NESTUP_PROJECT.md completely, then:
 Use Context7 MCP to get the exact @supabase/ssr createBrowserClient and
 createServerClient pattern for Next.js 14 App Router.
 Write:
-1. lib/supabase-browser.ts — browser client singleton
-2. lib/supabase-server.ts — server client with cookies()
-3. middleware.ts — route protection following Section 11 logic exactly
+1. lib/supabase-browser.ts -- browser client singleton
+2. lib/supabase-server.ts -- server client with cookies()
+3. middleware.ts -- route protection following Section 11 logic exactly
 Test middleware logic against these cases:
 - No session → redirect to /login
 - Admin session → /admin allowed, /member redirects to /admin
 - Member session → /member allowed, /admin redirects to /member
 ```
 
-**Session B — Admin Components:**
+**Session B -- Admin Components:**
 ```
 Read NESTUP_PROJECT.md completely, then:
 Read types/index.ts and utils/dependencyEngine.ts (do not modify either).
@@ -904,10 +904,10 @@ Build these components using Section 12 Admin Dashboard requirements:
 - components/admin/BottleneckBanner.tsx
 - components/admin/ProcessFlowDiagram.tsx (React Flow with dagre layout, Section 12 spec)
 Use Context7 MCP to verify @xyflow/react v12 API before writing the diagram.
-Never reimplement any logic from dependencyEngine.ts — always import it.
+Never reimplement any logic from dependencyEngine.ts -- always import it.
 ```
 
-**Session C — Member Components + Shared:**
+**Session C -- Member Components + Shared:**
 ```
 Read NESTUP_PROJECT.md completely, then:
 Read types/index.ts and utils/dependencyEngine.ts (do not modify either).
@@ -918,12 +918,12 @@ Build these components using Section 12 Member Dashboard requirements:
 - components/shared/PriorityBadge.tsx
 - components/shared/StatusChip.tsx
 The cascade trigger in TaskCard must follow the exact 7-step pattern in Section 13.
-Never reimplement isItemBlocked or cascade logic inline — import from dependencyEngine.ts.
+Never reimplement isItemBlocked or cascade logic inline -- import from dependencyEngine.ts.
 ```
 
 ---
 
-### GATE 3 — Codereview Agent
+### GATE 3 -- Codereview Agent
 
 ```
 Read NESTUP_PROJECT.md completely, then:
@@ -932,48 +932,48 @@ Review all components from Wave 3. Check for:
 2. cascade trigger in TaskCard matches Section 13 exactly (7 steps in order)
 3. DependencyModal shows inline banner (not toast) on cycle detection
 4. ProcessFlowDiagram uses @xyflow/react v12 API (not deprecated react-flow-renderer)
-5. All TypeScript types imported from types/index.ts — no inline type redefinitions
+5. All TypeScript types imported from types/index.ts -- no inline type redefinitions
 6. tsc --noEmit passes with zero errors
 Report PASS/FAIL per component with line numbers.
 ```
 
 ---
 
-### WAVE 4 — Build Agent (Routing + Pages)
+### WAVE 4 -- Build Agent (Routing + Pages)
 
 ```
 Read NESTUP_PROJECT.md completely, then:
 Read all components from Wave 3 (do not modify them).
 Wire everything together:
-- app/layout.tsx — base layout, Tailwind, font
-- app/page.tsx — redirect by role (admin→/admin, member→/member, none→/login)
-- app/(auth)/login/page.tsx — uses LoginForm, Supabase signInWithPassword
-- app/admin/page.tsx — AdminDashboard assembling all admin components
-- app/member/page.tsx — MemberDashboard assembling all member components
+- app/layout.tsx -- base layout, Tailwind, font
+- app/page.tsx -- redirect by role (admin→/admin, member→/member, none→/login)
+- app/(auth)/login/page.tsx -- uses LoginForm, Supabase signInWithPassword
+- app/admin/page.tsx -- AdminDashboard assembling all admin components
+- app/member/page.tsx -- MemberDashboard assembling all member components
 Verify Section 17 Demo Checklist items can all be triggered from the UI.
 ```
 
 ---
 
-### GATE 4 — Debug Agent
+### GATE 4 -- Debug Agent
 
 ```
 Read NESTUP_PROJECT.md completely, then:
 Run through Section 17 Demo Day Checklist manually. For each item that fails,
 identify the exact file + line causing the failure and fix it.
-Fix only what is broken — do not refactor working code.
+Fix only what is broken -- do not refactor working code.
 After all fixes: tsc --noEmit must pass. App must run without console errors.
 ```
 
 ---
 
-### WAVE 5 — Build Agent (Bonus Features)
+### WAVE 5 -- Build Agent (Bonus Features)
 
 ```
 Read NESTUP_PROJECT.md completely, then:
 Core is complete. Now add bonus features from Section 14 in this order:
-1. Overload badge (easiest — just UI using getWorkloadScore() already built)
-2. Auto-assign suggestion (suggestAssignees() already built — wire to WorkItemForm)
+1. Overload badge (easiest -- just UI using getWorkloadScore() already built)
+2. Auto-assign suggestion (suggestAssignees() already built -- wire to WorkItemForm)
 3. Supabase Realtime on admin dashboard (use Context7 for channel subscription syntax)
 4. Estimated completion on TaskCard (add progress_history jsonb column to work_items,
    store timestamps with each progress update, calculate daily avg rate)
@@ -982,7 +982,7 @@ Do them one at a time. After each, verify existing checklist still passes.
 
 ---
 
-### FINAL — Build Agent (README)
+### FINAL -- Build Agent (README)
 
 ```
 Read NESTUP_PROJECT.md completely, then:

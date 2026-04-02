@@ -9,7 +9,7 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
-  title: 'NestUp — Work Process Tracker',
+  title: 'NestUp -- Work Process Tracker',
   description: 'Manage tasks with dependency chains. Admins create and assign, members update progress.',
 }
 

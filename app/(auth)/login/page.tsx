@@ -4,7 +4,7 @@ import { Shield, Zap, Users } from 'lucide-react'
 export default function LoginPage() {
   return (
     <div className="flex min-h-screen">
-      {/* Left Panel — Branding */}
+      {/* Left Panel -- Branding */}
       <div className="hidden lg:flex lg:w-1/2 relative bg-gradient-to-br from-brand-600 via-brand-700 to-brand-900 overflow-hidden">
         {/* Decorative Elements */}
         <div className="absolute inset-0">
@@ -69,7 +69,7 @@ export default function LoginPage() {
         </div>
       </div>
 
-      {/* Right Panel — Login Form */}
+      {/* Right Panel -- Login Form */}
       <div className="flex-1 flex items-center justify-center bg-surface-50 px-6 py-12">
         <div className="w-full max-w-md animate-slide-up">
           {/* Mobile Logo */}

@@ -138,7 +138,7 @@ export default function AdminDashboard() {
 
   return (
     <div className="min-h-screen bg-surface-50">
-      {/* Header — Glass morphism */}
+      {/* Header -- Glass morphism */}
       <header className="sticky top-0 z-40 border-b border-surface-200 bg-white/80 backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-3.5">
           <div className="flex items-center gap-4">
@@ -185,7 +185,7 @@ export default function AdminDashboard() {
       </header>
 
       <main className="mx-auto max-w-7xl space-y-6 p-6">
-        {/* KPI Row — Animated, icon-enhanced */}
+        {/* KPI Row -- Animated, icon-enhanced */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="rounded-2xl border border-surface-200 bg-white p-5 shadow-sm card-hover animate-slide-up" style={{ animationDelay: '0ms' }}>
             <div className="flex items-center justify-between mb-3">

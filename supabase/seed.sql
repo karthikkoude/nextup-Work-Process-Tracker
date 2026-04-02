@@ -1,5 +1,5 @@
 -- ============================================================
--- NestUp Work Process Tracker — Seed Data
+-- NestUp Work Process Tracker -- Seed Data
 -- Section 09: Demo data for dependency chain verification
 -- All passwords: Demo1234!
 -- ============================================================
@@ -173,7 +173,7 @@ INSERT INTO public.users (id, name, email, role, skills) VALUES
 -- ============================================================
 
 INSERT INTO public.work_items (id, title, description, priority, progress, status, assigned_to, required_skills, progress_history) VALUES
-  -- Item A: UI Design Mockups — nina — progress=60 (seed value for demo)
+  -- Item A: UI Design Mockups -- nina -- progress=60 (seed value for demo)
   ('b2222222-2222-2222-2222-222222222001', 'UI Design Mockups',
    'Create high-fidelity UI mockups for the main application screens',
    'high', 60, 'in-progress',
@@ -181,7 +181,7 @@ INSERT INTO public.work_items (id, title, description, priority, progress, statu
    ARRAY['React','CSS','Figma'],
    '[{"progress": 0, "timestamp": "2026-03-30T10:00:00Z"}, {"progress": 30, "timestamp": "2026-03-31T10:00:00Z"}, {"progress": 60, "timestamp": "2026-04-01T10:00:00Z"}]'::jsonb),
 
-  -- Item B: Frontend Development — alex — progress=0
+  -- Item B: Frontend Development -- alex -- progress=0
   -- Will be unblocked at runtime because A=60 >= threshold 50
   ('b2222222-2222-2222-2222-222222222002', 'Frontend Development',
    'Implement the frontend React components based on approved mockups',
@@ -190,7 +190,7 @@ INSERT INTO public.work_items (id, title, description, priority, progress, statu
    ARRAY['React','TypeScript','Node.js'],
    '[]'::jsonb),
 
-  -- Item C: API Integration — carlos — progress=0
+  -- Item C: API Integration -- carlos -- progress=0
   -- Blocked because B=0 < threshold 100
   ('b2222222-2222-2222-2222-222222222003', 'API Integration',
    'Build and integrate REST API endpoints for all core features',
@@ -199,8 +199,8 @@ INSERT INTO public.work_items (id, title, description, priority, progress, statu
    ARRAY['Node.js','PostgreSQL','DevOps'],
    '[]'::jsonb),
 
-  -- Item D: Data Pipeline Setup — priya — progress=30
-  -- No dependencies — isolated item
+  -- Item D: Data Pipeline Setup -- priya -- progress=30
+  -- No dependencies -- isolated item
   ('b2222222-2222-2222-2222-222222222004', 'Data Pipeline Setup',
    'Design and implement the data processing pipeline',
    'medium', 30, 'in-progress',
@@ -208,7 +208,7 @@ INSERT INTO public.work_items (id, title, description, priority, progress, statu
    ARRAY['Python','Data','ML'],
    '[{"progress": 0, "timestamp": "2026-03-31T10:00:00Z"}, {"progress": 30, "timestamp": "2026-04-01T10:00:00Z"}]'::jsonb),
 
-  -- Item E: QA Testing — alex — progress=0
+  -- Item E: QA Testing -- alex -- progress=0
   -- Blocked because C=0 < threshold 100
   ('b2222222-2222-2222-2222-222222222005', 'QA Testing',
    'Comprehensive quality assurance testing across all modules',
@@ -217,7 +217,7 @@ INSERT INTO public.work_items (id, title, description, priority, progress, statu
    ARRAY['React','TypeScript','Node.js'],
    '[]'::jsonb),
 
-  -- Item F: Performance Optimization — carlos — progress=0
+  -- Item F: Performance Optimization -- carlos -- progress=0
   -- Blocked because C=0 < threshold 100
   ('b2222222-2222-2222-2222-222222222006', 'Performance Optimization',
    'Profile and optimize application performance bottlenecks',
@@ -226,8 +226,8 @@ INSERT INTO public.work_items (id, title, description, priority, progress, statu
    ARRAY['Node.js','PostgreSQL','DevOps'],
    '[]'::jsonb),
 
-  -- Item G: Deployment Prep — carlos — progress=0
-  -- Zero dependencies — used for circular rejection demo (try G → A)
+  -- Item G: Deployment Prep -- carlos -- progress=0
+  -- Zero dependencies -- used for circular rejection demo (try G → A)
   ('b2222222-2222-2222-2222-222222222007', 'Deployment Prep',
    'Prepare CI/CD pipelines and production deployment configuration',
    'low', 0, 'in-progress',
@@ -253,7 +253,7 @@ INSERT INTO public.dependencies (from_id, to_id, type, threshold) VALUES
   ('b2222222-2222-2222-2222-222222222003', 'b2222222-2222-2222-2222-222222222005', 'full',    100),
 
   -- C → F : full, threshold=100
-  -- F only unblocks when C=100% — makes C a bottleneck (blocks E+F)
+  -- F only unblocks when C=100% -- makes C a bottleneck (blocks E+F)
   ('b2222222-2222-2222-2222-222222222003', 'b2222222-2222-2222-2222-222222222006', 'full',    100);
 
 -- ============================================================
@@ -268,4 +268,4 @@ INSERT INTO public.dependencies (from_id, to_id, type, threshold) VALUES
 -- Item G: no dependencies → in-progress ✓
 --
 -- Bottleneck: C blocks E and F (2 successors, status != 'done') ✓
--- Circular demo: G has zero deps — try adding G → A to test hasCycle() ✓
+-- Circular demo: G has zero deps -- try adding G → A to test hasCycle() ✓

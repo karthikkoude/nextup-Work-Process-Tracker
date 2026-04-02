@@ -130,7 +130,7 @@ export default function MemberDashboard() {
 
   return (
     <div className="min-h-screen bg-surface-50">
-      {/* Header — Glass morphism */}
+      {/* Header -- Glass morphism */}
       <header className="sticky top-0 z-40 border-b border-surface-200 bg-white/80 backdrop-blur-xl">
         <div className="mx-auto max-w-7xl px-6 py-3.5">
           <div className="flex items-center gap-3">

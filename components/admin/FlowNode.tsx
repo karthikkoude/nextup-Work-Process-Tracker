@@ -65,7 +65,7 @@ const FlowNode = memo(
         tabIndex={0}
         aria-label={`Work item: ${title}, status: ${status}, progress: ${progress}%`}
       >
-        {/* Target Handle — Left side (incoming dependencies) */}
+        {/* Target Handle -- Left side (incoming dependencies) */}
         <Handle
           type="target"
           position={Position.Left}
@@ -97,7 +97,7 @@ const FlowNode = memo(
           </span>
         </div>
 
-        {/* Source Handle — Right side (outgoing dependencies) */}
+        {/* Source Handle -- Right side (outgoing dependencies) */}
         <Handle
           type="source"
           position={Position.Right}

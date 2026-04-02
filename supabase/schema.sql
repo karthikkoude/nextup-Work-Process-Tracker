@@ -1,5 +1,5 @@
 -- =====================================================
--- NestUp Work Process Tracker — Database Schema
+-- NestUp Work Process Tracker -- Database Schema
 -- =====================================================
 -- Tables: public.users, public.work_items, public.dependencies
 -- RLS: Admin full CRUD on all tables. Member limited SELECT/UPDATE on work_items,

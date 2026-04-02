@@ -1,15 +1,15 @@
-# NestUp UI/UX Wave — Design System + Visual Implementation
+# NestUp UI/UX Wave -- Design System + Visual Implementation
 
-> **When to use this file:** Insert this as Wave 2.5 — after Gate 2 (dependency engine
+> **When to use this file:** Insert this as Wave 2.5 -- after Gate 2 (dependency engine
 > passes FeatureHealth), before Wave 3 (component building begins).
 > Every agent in this wave reads NESTUP_PROJECT.md first, then this file.
 > This wave defines the visual language every component in Wave 3 must follow.
 
 ---
 
-## UI Direction — What This App Should Feel Like
+## UI Direction -- What This App Should Feel Like
 
-NestUp is a **professional work management tool** — not a startup landing page, not
+NestUp is a **professional work management tool** -- not a startup landing page, not
 a consumer app. The UI must feel like Linear or Notion: calm, dense, trustworthy.
 
 **Three words that define the visual tone:** Structured. Clear. Purposeful.
@@ -24,13 +24,13 @@ a consumer app. The UI must feel like Linear or Notion: calm, dense, trustworthy
 
 ---
 
-## Design Tokens — Tailwind Config Extension
+## Design Tokens -- Tailwind Config Extension
 
 **Agent instruction:** Add these to `tailwind.config.ts` under `theme.extend`.
-Every component must use these tokens — no hardcoded hex values in className strings.
+Every component must use these tokens -- no hardcoded hex values in className strings.
 
 ```typescript
-// tailwind.config.ts — theme.extend section
+// tailwind.config.ts -- theme.extend section
 colors: {
   // Surfaces (neutral slate base)
   surface: {
@@ -48,7 +48,7 @@ colors: {
     faint:   '#94a3b8',   // timestamps, helper text
     inverse: '#f8fafc',   // text on dark backgrounds
   },
-  // Status colors — ONLY use for work item status, never decoratively
+  // Status colors -- ONLY use for work item status, never decoratively
   status: {
     blocked:     '#ef4444',   // red-500
     blockedBg:   '#fef2f2',   // red-50
@@ -60,14 +60,14 @@ colors: {
     doneBg:      '#f0fdf4',   // green-50
     doneBorder:  '#bbf7d0',   // green-200
   },
-  // Priority colors — muted, not as loud as status
+  // Priority colors -- muted, not as loud as status
   priority: {
     critical:   '#dc2626',    // red-600
     high:       '#ea580c',    // orange-600
     medium:     '#ca8a04',    // yellow-600
     low:        '#16a34a',    // green-600
   },
-  // Primary action (teal — used only for CTAs and active states)
+  // Primary action (teal -- used only for CTAs and active states)
   brand: {
     DEFAULT:    '#0d9488',    // teal-600
     hover:      '#0f766e',    // teal-700
@@ -87,21 +87,21 @@ fontFamily: {
   mono: ['JetBrains Mono', 'monospace'],
 },
 fontSize: {
-  '2xs': ['0.625rem', { lineHeight: '0.875rem' }],  // 10px — tiny labels only
-  xs:   ['0.75rem',  { lineHeight: '1rem' }],        // 12px — badges, timestamps
-  sm:   ['0.875rem', { lineHeight: '1.25rem' }],     // 14px — body, table cells
-  base: ['1rem',     { lineHeight: '1.5rem' }],      // 16px — standard body
-  lg:   ['1.125rem', { lineHeight: '1.75rem' }],     // 18px — section headings
-  xl:   ['1.25rem',  { lineHeight: '1.75rem' }],     // 20px — page titles
-  '2xl':['1.5rem',   { lineHeight: '2rem' }],        // 24px — dashboard KPI numbers
+  '2xs': ['0.625rem', { lineHeight: '0.875rem' }],  // 10px -- tiny labels only
+  xs:   ['0.75rem',  { lineHeight: '1rem' }],        // 12px -- badges, timestamps
+  sm:   ['0.875rem', { lineHeight: '1.25rem' }],     // 14px -- body, table cells
+  base: ['1rem',     { lineHeight: '1.5rem' }],      // 16px -- standard body
+  lg:   ['1.125rem', { lineHeight: '1.75rem' }],     // 18px -- section headings
+  xl:   ['1.25rem',  { lineHeight: '1.75rem' }],     // 20px -- page titles
+  '2xl':['1.5rem',   { lineHeight: '2rem' }],        // 24px -- dashboard KPI numbers
 },
 borderRadius: {
-  sm:   '0.25rem',   // 4px  — badges, chips
-  DEFAULT:'0.375rem',// 6px  — inputs, buttons
-  md:   '0.5rem',    // 8px  — cards, modals
-  lg:   '0.75rem',   // 12px — large panels
-  xl:   '1rem',      // 16px — full-page modals
-  full: '9999px',    // pill — avatars, pill badges
+  sm:   '0.25rem',   // 4px  -- badges, chips
+  DEFAULT:'0.375rem',// 6px  -- inputs, buttons
+  md:   '0.5rem',    // 8px  -- cards, modals
+  lg:   '0.75rem',   // 12px -- large panels
+  xl:   '1rem',      // 16px -- full-page modals
+  full: '9999px',    // pill -- avatars, pill badges
 },
 boxShadow: {
   card:  '0 1px 3px rgba(15,23,42,0.06), 0 1px 2px rgba(15,23,42,0.04)',
@@ -132,7 +132,7 @@ Load Inter from Google Fonts in `app/layout.tsx`:
 | Table header | `text-xs font-semibold text-ink-muted uppercase tracking-wider` |
 | Table cell | `text-sm text-ink-body` |
 
-**Rule:** `tabular-nums` on every number that changes dynamically — KPIs, progress %, scores.
+**Rule:** `tabular-nums` on every number that changes dynamically -- KPIs, progress %, scores.
 
 ---
 
@@ -163,7 +163,7 @@ Load Inter from Google Fonts in `app/layout.tsx`:
 
 **Admin dashboard sections order:**
 1. KPI Row
-2. Bottleneck Banner (conditional — only when items exist)
+2. Bottleneck Banner (conditional -- only when items exist)
 3. Process Flow Diagram (full width)
 4. Two-column: Workload Table (left 60%) + Quick Actions (right 40%)
 
@@ -176,7 +176,7 @@ Load Inter from Google Fonts in `app/layout.tsx`:
 
 ## Component Specifications
 
-### Wave 2.5A — Surgical Agent — Design Tokens File
+### Wave 2.5A -- Surgical Agent -- Design Tokens File
 
 **Session prompt:**
 ```
@@ -195,7 +195,7 @@ Read NESTUP_PROJECT.md and NESTUP_UI_WAVE.md completely, then:
 
 ---
 
-### Wave 2.5B — Build Agent — Base Component Library
+### Wave 2.5B -- Build Agent -- Base Component Library
 
 **Session prompt:**
 ```
@@ -235,7 +235,7 @@ defined in NESTUP_UI_WAVE.md. No inline hex values. No hardcoded colors.
 6. components/ui/EmptyState.tsx
    Props: icon (lucide component), title, description, action (optional button)
    Style: flex col items-center text-center py-16 text-ink-muted
-   Rule: never render raw "No items" text anywhere — always use this component
+   Rule: never render raw "No items" text anywhere -- always use this component
 
 After writing, verify: all colors reference Tailwind tokens, no hardcoded hex values,
 tsc --noEmit passes.
@@ -243,7 +243,7 @@ tsc --noEmit passes.
 
 ---
 
-### Wave 2.5C — Build Agent — Layout Shell
+### Wave 2.5C -- Build Agent -- Layout Shell
 
 **Session prompt:**
 ```
@@ -251,7 +251,7 @@ Read NESTUP_PROJECT.md and NESTUP_UI_WAVE.md completely, then:
 Build the app shell layout components:
 
 1. components/layout/TopNav.tsx
-   Left: NestUp logo (SVG inline — simple geometric N mark, teal color)
+   Left: NestUp logo (SVG inline -- simple geometric N mark, teal color)
    Right: user email + role badge + logout button (ghost variant)
    Style: h-14 px-6 flex items-center justify-between bg-surface-card
    border-b border-surface-border sticky top-0 z-30
@@ -270,18 +270,18 @@ Build the app shell layout components:
    Wraps: TopNav + full-width main content
    Main: max-w-3xl mx-auto px-6 py-6 bg-surface-base
 
-The NestUp SVG logo must be custom — not a placeholder. Simple geometric shape.
+The NestUp SVG logo must be custom -- not a placeholder. Simple geometric shape.
 Teal color using brand.DEFAULT token (#0d9488).
 ```
 
 ---
 
-### Wave 2.5D — Surgical Agent — React Flow Custom Nodes
+### Wave 2.5D -- Surgical Agent -- React Flow Custom Nodes
 
 **Session prompt:**
 ```
 Read NESTUP_PROJECT.md and NESTUP_UI_WAVE.md completely, then:
-Create components/admin/FlowNode.tsx — the custom node for React Flow diagram.
+Create components/admin/FlowNode.tsx -- the custom node for React Flow diagram.
 
 This is the most visually important component in the entire app.
 Use Context7 MCP to verify @xyflow/react v12 custom node API before writing.
@@ -319,7 +319,7 @@ After writing, create a FlowEdge.tsx for custom edges:
 
 ---
 
-### Wave 2.5 GATE — Codereview Agent
+### Wave 2.5 GATE -- Codereview Agent
 
 **Session prompt:**
 ```
@@ -329,9 +329,9 @@ components/ui/*, components/layout/*, components/admin/FlowNode.tsx,
 components/admin/FlowEdge.tsx).
 
 Check for:
-1. No hardcoded hex values in any component — all colors must use Tailwind token classes
+1. No hardcoded hex values in any component -- all colors must use Tailwind token classes
 2. All text sizes use the defined scale (text-xs through text-2xl only)
-3. Status colors ONLY on StatusChip and FlowNode — not used decoratively anywhere else
+3. Status colors ONLY on StatusChip and FlowNode -- not used decoratively anywhere else
 4. EmptyState component exists and is the only way to show empty content
 5. Modal has Escape key handler and X button
 6. FlowNode handles all 3 status states with correct token colors
@@ -348,10 +348,10 @@ Are there any color inconsistencies between StatusChip and FlowNode status color
 ## States & Feedback Rules
 
 Every agent in Wave 3 must implement these states for every data-fetching component.
-These are NOT optional — the founder will see these states during the demo.
+These are NOT optional -- the founder will see these states during the demo.
 
 ### Loading States
-- Skeleton shimmer pattern only — no spinners inside content areas
+- Skeleton shimmer pattern only -- no spinners inside content areas
 - Tailwind shimmer: `animate-pulse bg-surface-offset rounded`
 - KPI row loading: 4 skeleton cards same size as real KPIs
 - Table loading: 5 skeleton rows with 4 columns each
@@ -382,7 +382,7 @@ Always use `components/ui/EmptyState.tsx`. Content per section:
 
 ## Responsive Rules
 
-This is a demo app — desktop (1280px+) is the primary target.
+This is a demo app -- desktop (1280px+) is the primary target.
 Mobile must not break but doesn't need to be perfect.
 
 | Component | Desktop | Mobile (375px) |
@@ -396,18 +396,18 @@ Mobile must not break but doesn't need to be perfect.
 
 ---
 
-## Specific Anti-Patterns — Do NOT Do These
+## Specific Anti-Patterns -- Do NOT Do These
 
 These are the exact patterns that will make the demo look like a generic template:
 
-- **No colored card borders** — `border-l-4 border-red-500` style. Use bg color instead.
-- **No gradient buttons** — `bg-gradient-to-r from-teal-500 to-blue-500`. Use solid brand color.
-- **No icon-in-colored-circle pattern** — icons inside rounded colored squares. Use icons directly.
-- **No centered text in dashboard cards** — all card content left-aligned.
-- **No rainbow status system** — only 3 status colors exist. Never add purple, pink, indigo for any status.
-- **No toast for cycle rejection** — must be inline persistent banner.
-- **No percentage text without tabular-nums** — numbers jumping width on change looks broken.
-- **No hover effects on the React Flow canvas background** — only on nodes.
+- **No colored card borders** -- `border-l-4 border-red-500` style. Use bg color instead.
+- **No gradient buttons** -- `bg-gradient-to-r from-teal-500 to-blue-500`. Use solid brand color.
+- **No icon-in-colored-circle pattern** -- icons inside rounded colored squares. Use icons directly.
+- **No centered text in dashboard cards** -- all card content left-aligned.
+- **No rainbow status system** -- only 3 status colors exist. Never add purple, pink, indigo for any status.
+- **No toast for cycle rejection** -- must be inline persistent banner.
+- **No percentage text without tabular-nums** -- numbers jumping width on change looks broken.
+- **No hover effects on the React Flow canvas background** -- only on nodes.
 
 ---
 
