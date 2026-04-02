@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react'
 import { createClient } from '@/lib/supabase-browser'
 import type { WorkItem, Dependency, User, ProgressSnapshot } from '@/types'
-import { User as UserIcon, Zap, ClipboardList, ArrowRight } from 'lucide-react'
+import { User as UserIcon, Zap, ClipboardList, ArrowRight, LogOut } from 'lucide-react'
 import TaskCard from '@/components/member/TaskCard'
 import BlockingImpactView from '@/components/member/BlockingImpactView'
 
@@ -94,6 +94,11 @@ export default function MemberDashboard() {
     setItems(updatedItems)
   }
 
+  const handleSignOut = async () => {
+    await supabase.auth.signOut()
+    window.location.href = '/login'
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen bg-surface-50">
@@ -132,7 +137,7 @@ export default function MemberDashboard() {
     <div className="min-h-screen bg-surface-50">
       {/* Header -- Glass morphism */}
       <header className="sticky top-0 z-40 border-b border-surface-200 bg-white/80 backdrop-blur-xl">
-        <div className="mx-auto max-w-7xl px-6 py-3.5">
+        <div className="mx-auto max-w-7xl px-6 py-3.5 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-xl bg-brand-600 flex items-center justify-center shadow-lg shadow-brand-600/20">
               <Zap className="w-4 h-4 text-white" />
@@ -144,6 +149,13 @@ export default function MemberDashboard() {
               <p className="text-xs text-surface-500">Update your tasks and track progress</p>
             </div>
           </div>
+          <button
+            onClick={handleSignOut}
+            className="p-2 rounded-xl text-surface-400 hover:text-danger-600 hover:bg-danger-50 transition-all duration-200"
+            aria-label="Sign out"
+          >
+            <LogOut className="h-5 w-5" />
+          </button>
         </div>
       </header>
 
@@ -201,7 +213,7 @@ export default function MemberDashboard() {
             <ArrowRight className="w-5 h-5 text-surface-500" />
             <h2 className="text-lg font-semibold text-surface-900">Blocking Others</h2>
           </div>
-          <BlockingImpactView currentUserId={currentUser.id} items={items} deps={deps} />
+          <BlockingImpactView currentUserId={currentUser.id} />
         </section>
       </main>
     </div>

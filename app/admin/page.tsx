@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react'
 import { createClient } from '@/lib/supabase-browser'
 import type { WorkItem, Dependency, User } from '@/types'
+import { cascadeStatusUpdate } from '@/utils/dependencyEngine'
 import { LogOut, User as UserIcon, LayoutGrid, AlertTriangle, Clock, CheckCircle2, Package, Zap } from 'lucide-react'
 import BottleneckBanner from '@/components/admin/BottleneckBanner'
 import ProcessFlowDiagram from '@/components/admin/ProcessFlowDiagram'
@@ -47,6 +48,31 @@ export default function AdminDashboard() {
     }
   }, [supabase])
 
+  const refreshWorkItemsWithCascade = useCallback(
+    async (changedItemId?: string) => {
+      try {
+        const { data: itemsData } = await supabase
+          .from('work_items')
+          .select('*')
+          .order('created_at', { ascending: true })
+
+        if (!itemsData) return
+
+        const freshItems = itemsData as WorkItem[]
+        if (!changedItemId) {
+          setItems(freshItems)
+          return
+        }
+
+        const cascadedItems = cascadeStatusUpdate(changedItemId, freshItems, deps)
+        setItems(cascadedItems)
+      } catch (error) {
+        console.error('Failed to refresh work items:', error)
+      }
+    },
+    [supabase, deps]
+  )
+
   useEffect(() => {
     const fetchUser = async () => {
       const { data: { user } } = await supabase.auth.getUser()
@@ -68,23 +94,27 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     const channel = supabase
-      .channel('admin-work-items-changes')
+      .channel('admin-work-items-updates')
       .on(
         'postgres_changes',
-        { event: '*', schema: 'public', table: 'work_items' },
-        () => { fetchData() }
+        { event: 'UPDATE', schema: 'public', table: 'work_items' },
+        (payload) => {
+          const changedItemId = typeof payload.new.id === 'string' ? payload.new.id : undefined
+          void refreshWorkItemsWithCascade(changedItemId)
+        }
       )
       .subscribe()
 
     return () => { supabase.removeChannel(channel) }
-  }, [supabase, fetchData])
+  }, [supabase, refreshWorkItemsWithCascade])
 
-  const handleCreateWorkItem = async (item: Omit<WorkItem, 'id' | 'progress' | 'status' | 'created_at' | 'updated_at' | 'blocked_reason' | 'progress_history'>) => {
+  const handleCreateWorkItem = async (item: Omit<WorkItem, 'id' | 'progress' | 'created_at' | 'updated_at' | 'blocked_reason' | 'progress_history'>) => {
     const now = new Date().toISOString()
+    const initialProgress = item.status === 'done' ? 100 : 0
     const { error } = await supabase.from('work_items').insert({
       ...item,
-      progress: 0,
-      status: 'in-progress',
+      progress: initialProgress,
+      status: item.status,
       progress_history: [],
       created_at: now,
       updated_at: now,

@@ -1,14 +1,14 @@
 'use client'
 
 import { useState, useMemo, useEffect, useRef, useCallback } from 'react'
-import type { User, WorkItem, Priority } from '@/types'
+import type { User, WorkItem, Priority, WorkStatus } from '@/types'
 import { suggestAssignees } from '@/utils/dependencyEngine'
 import { Plus, X, Tag, UserCheck, FileText } from 'lucide-react'
 
 interface WorkItemFormProps {
   isOpen: boolean
   onClose: () => void
-  onSubmit: (item: Omit<WorkItem, 'id' | 'progress' | 'status' | 'created_at' | 'updated_at' | 'blocked_reason' | 'progress_history'>) => void
+  onSubmit: (item: Omit<WorkItem, 'id' | 'progress' | 'created_at' | 'updated_at' | 'blocked_reason' | 'progress_history'>) => void
   users: User[]
   items: WorkItem[]
   editItem?: WorkItem | null
@@ -18,6 +18,7 @@ export default function WorkItemForm({ isOpen, onClose, onSubmit, users, items, 
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [priority, setPriority] = useState<Priority>('medium')
+  const [status, setStatus] = useState<WorkStatus>('in-progress')
   const [skillInput, setSkillInput] = useState('')
   const [requiredSkills, setRequiredSkills] = useState<string[]>([])
   const [assignedTo, setAssignedTo] = useState('')
@@ -27,12 +28,14 @@ export default function WorkItemForm({ isOpen, onClose, onSubmit, users, items, 
       setTitle(editItem.title)
       setDescription(editItem.description)
       setPriority(editItem.priority)
+      setStatus(editItem.status)
       setRequiredSkills([...editItem.required_skills])
       setAssignedTo(editItem.assigned_to)
     } else {
       setTitle('')
       setDescription('')
       setPriority('medium')
+      setStatus('in-progress')
       setRequiredSkills([])
       setAssignedTo('')
     }
@@ -63,6 +66,7 @@ export default function WorkItemForm({ isOpen, onClose, onSubmit, users, items, 
       title: title.trim(),
       description: description.trim(),
       priority,
+      status,
       required_skills: requiredSkills,
       assigned_to: assignedTo,
     })
@@ -70,6 +74,7 @@ export default function WorkItemForm({ isOpen, onClose, onSubmit, users, items, 
     setTitle('')
     setDescription('')
     setPriority('medium')
+    setStatus('in-progress')
     setRequiredSkills([])
     setAssignedTo('')
     setSkillInput('')
@@ -80,6 +85,7 @@ export default function WorkItemForm({ isOpen, onClose, onSubmit, users, items, 
     setTitle('')
     setDescription('')
     setPriority('medium')
+    setStatus('in-progress')
     setRequiredSkills([])
     setAssignedTo('')
     setSkillInput('')
@@ -166,6 +172,23 @@ export default function WorkItemForm({ isOpen, onClose, onSubmit, users, items, 
               <option value="medium">Medium</option>
               <option value="high">High</option>
               <option value="critical">Critical</option>
+            </select>
+          </div>
+
+          {/* Status */}
+          <div>
+            <label htmlFor="wi-status" className="mb-1.5 block text-sm font-medium text-surface-700">
+              Initial Status
+            </label>
+            <select
+              id="wi-status"
+              value={status}
+              onChange={(e) => setStatus(e.target.value as WorkStatus)}
+              className="w-full rounded-xl border border-surface-300 px-3.5 py-2.5 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 transition-all duration-200 bg-white"
+            >
+              <option value="in-progress">In Progress</option>
+              <option value="blocked">Blocked</option>
+              <option value="done">Done</option>
             </select>
           </div>
 

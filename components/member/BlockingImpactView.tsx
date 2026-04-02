@@ -1,47 +1,96 @@
 'use client'
 
-import type { Dependency, WorkItem } from '@/types'
-import { isItemBlocked } from '@/utils/dependencyEngine'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { createClient } from '@/lib/supabase-browser'
 import { ArrowRight, CheckCircle2, AlertCircle } from 'lucide-react'
 
 interface BlockingImpactViewProps {
   currentUserId: string
-  items: WorkItem[]
-  deps: Dependency[]
+}
+
+interface BlockingImpactRow {
+  dependency_id: string
+  from_id: string
+  to_id: string
+  downstream_title: string
+  dependency_type: 'partial' | 'full'
+  threshold: number
+  predecessor_progress: number
+  progress_needed: number
 }
 
 export default function BlockingImpactView({
   currentUserId,
-  items,
-  deps,
 }: BlockingImpactViewProps) {
-  const userItemIds = items
-    .filter((item) => item.assigned_to === currentUserId)
-    .map((item) => item.id)
+  const [blockedDownstream, setBlockedDownstream] = useState<BlockingImpactRow[]>([])
+  const [loading, setLoading] = useState(true)
+  const supabase = useMemo(() => createClient(), [])
+  const refreshTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  const blockedDownstream = deps
-    .filter((dep) => userItemIds.includes(dep.from_id))
-    .map((dep) => {
-      const downstreamItem = items.find((item) => item.id === dep.to_id)
-      const predecessorItem = items.find((item) => item.id === dep.from_id)
-      if (!downstreamItem || !predecessorItem) return null
+  const fetchBlockingImpact = useCallback(async () => {
+    try {
+      const { data, error } = await supabase.rpc('get_member_blocking_impact')
+      if (error) throw error
+      setBlockedDownstream((data ?? []) as BlockingImpactRow[])
+    } catch (error) {
+      console.error('Failed to load blocking impact:', error)
+      setBlockedDownstream([])
+    } finally {
+      setLoading(false)
+    }
+  }, [supabase])
 
-      const stillBlocked = isItemBlocked(downstreamItem.id, items, deps)
-      const progressNeeded = Math.max(0, dep.threshold - predecessorItem.progress)
+  useEffect(() => {
+    void fetchBlockingImpact()
+  }, [fetchBlockingImpact, currentUserId])
 
-      return {
-        downstreamItem,
-        dep,
-        stillBlocked,
-        progressNeeded,
+  const scheduleRefresh = useCallback(() => {
+    if (refreshTimerRef.current) {
+      clearTimeout(refreshTimerRef.current)
+    }
+
+    refreshTimerRef.current = setTimeout(() => {
+      void fetchBlockingImpact()
+      refreshTimerRef.current = null
+    }, 150)
+  }, [fetchBlockingImpact])
+
+  useEffect(() => {
+    const channel = supabase
+      .channel(`member-blocking-impact-${currentUserId}`)
+      .on(
+        'postgres_changes',
+        { event: 'UPDATE', schema: 'public', table: 'work_items' },
+        () => {
+          scheduleRefresh()
+        }
+      )
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'dependencies' },
+        () => {
+          scheduleRefresh()
+        }
+      )
+      .subscribe()
+
+    return () => {
+      if (refreshTimerRef.current) {
+        clearTimeout(refreshTimerRef.current)
+        refreshTimerRef.current = null
       }
-    })
-    .filter(Boolean) as {
-    downstreamItem: WorkItem
-    dep: Dependency
-    stillBlocked: boolean
-    progressNeeded: number
-  }[]
+      void supabase.removeChannel(channel)
+    }
+  }, [supabase, currentUserId, scheduleRefresh])
+
+  if (loading) {
+    return (
+      <div className="rounded-2xl border border-surface-200 bg-white p-6 shadow-sm">
+        <div className="skeleton h-4 w-48 mb-3" />
+        <div className="skeleton h-4 w-64" />
+      </div>
+    )
+  }
 
   if (blockedDownstream.length === 0) {
     return (
@@ -59,48 +108,31 @@ export default function BlockingImpactView({
 
   return (
     <div className="space-y-3">
-      {blockedDownstream.map(({ downstreamItem, dep, stillBlocked, progressNeeded }) => (
+      {blockedDownstream.map((impact) => (
         <div
-          key={dep.id}
-          className={`rounded-xl border p-4 transition-all duration-200 card-hover ${
-            stillBlocked
-              ? 'border-danger-200 bg-gradient-to-r from-danger-50/50 to-white'
-              : 'border-success-200 bg-gradient-to-r from-success-50/50 to-white'
-          }`}
+          key={impact.dependency_id}
+          className="rounded-xl border p-4 transition-all duration-200 card-hover border-danger-200 bg-gradient-to-r from-danger-50/50 to-white"
         >
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className={`w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 ${
-                stillBlocked ? 'bg-danger-100' : 'bg-success-100'
-              }`}>
-                {stillBlocked ? (
-                  <AlertCircle className="w-4 h-4 text-danger-600" />
-                ) : (
-                  <CheckCircle2 className="w-4 h-4 text-success-600" />
-                )}
+              <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 bg-danger-100">
+                <AlertCircle className="w-4 h-4 text-danger-600" />
               </div>
               <div>
                 <p className="text-sm font-semibold text-surface-900">
-                  {downstreamItem.title}
+                  {impact.downstream_title}
                 </p>
                 <p className="mt-0.5 text-xs text-surface-500 flex items-center gap-1">
                   <span className="inline-block w-3 h-px bg-surface-300" />
-                  {dep.type === 'full' ? 'Full' : `Partial (${dep.threshold}%)`} dependency
+                  {impact.dependency_type === 'full' ? 'Full' : `Partial (${impact.threshold}%)`} dependency
                 </p>
               </div>
             </div>
             <div className="text-right">
-              {stillBlocked ? (
-                <span className="inline-flex items-center gap-1.5 rounded-lg bg-danger-100 px-3 py-1.5 text-xs font-semibold text-danger-700">
-                  <ArrowRight className="w-3 h-3" />
-                  Needs {progressNeeded}% more
-                </span>
-              ) : (
-                <span className="inline-flex items-center gap-1.5 rounded-lg bg-success-100 px-3 py-1.5 text-xs font-semibold text-success-700">
-                  <CheckCircle2 className="w-3 h-3" />
-                  Unblocked
-                </span>
-              )}
+              <span className="inline-flex items-center gap-1.5 rounded-lg bg-danger-100 px-3 py-1.5 text-xs font-semibold text-danger-700">
+                <ArrowRight className="w-3 h-3" />
+                Needs {impact.progress_needed}% more
+              </span>
             </div>
           </div>
         </div>

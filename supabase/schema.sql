@@ -135,3 +135,47 @@ create trigger set_work_items_updated_at
   before update on public.work_items
   for each row
   execute function public.handle_updated_at();
+
+-- =====================================================
+-- RPC: Member blocking impact projection
+-- Returns downstream tasks that are waiting on current member's work
+-- =====================================================
+create or replace function public.get_member_blocking_impact()
+returns table (
+  dependency_id uuid,
+  from_id uuid,
+  to_id uuid,
+  downstream_title text,
+  dependency_type text,
+  threshold integer,
+  predecessor_progress integer,
+  progress_needed integer
+)
+language sql
+security definer
+set search_path = public
+as $$
+  with member_items as (
+    select wi.id, wi.progress, wi.status
+    from public.work_items wi
+    where wi.assigned_to = auth.uid()
+  )
+  select
+    d.id as dependency_id,
+    d.from_id,
+    d.to_id,
+    downstream.title as downstream_title,
+    d.type as dependency_type,
+    d.threshold,
+    predecessor.progress as predecessor_progress,
+    greatest(0, d.threshold - predecessor.progress) as progress_needed
+  from public.dependencies d
+  join member_items predecessor on predecessor.id = d.from_id
+  join public.work_items downstream on downstream.id = d.to_id
+  where predecessor.status <> 'done'
+    and predecessor.progress < d.threshold
+  order by downstream.created_at asc;
+$$;
+
+revoke all on function public.get_member_blocking_impact() from public;
+grant execute on function public.get_member_blocking_impact() to authenticated;
