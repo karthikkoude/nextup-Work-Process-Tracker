@@ -112,6 +112,51 @@ INSERT INTO auth.users (
 );
 
 -- ============================================================
+-- 1.4 NORMALIZE AUTH AUDIENCE/ROLE
+-- ============================================================
+
+UPDATE auth.users
+SET
+  aud = COALESCE(aud, 'authenticated'),
+  role = COALESCE(role, 'authenticated')
+WHERE id IN (
+  'a1111111-1111-1111-1111-111111111001',
+  'a1111111-1111-1111-1111-111111111002',
+  'a1111111-1111-1111-1111-111111111003',
+  'a1111111-1111-1111-1111-111111111004',
+  'a1111111-1111-1111-1111-111111111005',
+  'a1111111-1111-1111-1111-111111111006'
+);
+
+-- ============================================================
+-- 1.5 CREATE AUTH IDENTITIES (required for password sign-in)
+-- NOTE: inserting only into auth.users is not enough for GoTrue login
+-- ============================================================
+
+INSERT INTO auth.identities (provider_id, user_id, identity_data, provider, created_at, updated_at)
+SELECT
+  u.id::text,
+  u.id,
+  jsonb_build_object(
+    'sub', u.id::text,
+    'email', u.email,
+    'email_verified', (u.email_confirmed_at IS NOT NULL)
+  ),
+  'email',
+  now(),
+  now()
+FROM auth.users u
+WHERE u.id IN (
+  'a1111111-1111-1111-1111-111111111001',
+  'a1111111-1111-1111-1111-111111111002',
+  'a1111111-1111-1111-1111-111111111003',
+  'a1111111-1111-1111-1111-111111111004',
+  'a1111111-1111-1111-1111-111111111005',
+  'a1111111-1111-1111-1111-111111111006'
+)
+ON CONFLICT (provider_id, provider) DO NOTHING;
+
+-- ============================================================
 -- 2. CREATE PUBLIC USER PROFILES
 -- ============================================================
 
