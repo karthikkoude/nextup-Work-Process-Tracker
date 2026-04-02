@@ -128,7 +128,8 @@ begin
   new.updated_at = now();
   return new;
 end;
-$$ language plpgsql;
+$$ language plpgsql
+set search_path = public;
 
 create trigger set_work_items_updated_at
   before update on public.work_items
