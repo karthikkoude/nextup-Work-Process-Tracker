@@ -24,21 +24,29 @@ create index idx_users_email on public.users (email);
 
 alter table public.users enable row level security;
 
+-- Helper: avoid recursive self-reference in RLS policies
+create or replace function public.is_admin_user()
+returns boolean
+language sql
+security definer
+set search_path = public
+as $$
+  select exists (
+    select 1
+    from public.users
+    where id = auth.uid()
+      and role = 'admin'
+  );
+$$;
+
+revoke all on function public.is_admin_user() from public;
+grant execute on function public.is_admin_user() to authenticated;
+
 -- Admins: full CRUD on users
 create policy "Admins full access to users"
   on public.users for all to authenticated
-  using (
-    exists (
-      select 1 from public.users u
-      where u.id = auth.uid() and u.role = 'admin'
-    )
-  )
-  with check (
-    exists (
-      select 1 from public.users u
-      where u.id = auth.uid() and u.role = 'admin'
-    )
-  );
+  using (public.is_admin_user())
+  with check (public.is_admin_user());
 
 -- Members: SELECT own row only
 create policy "Members view own user row"
@@ -72,23 +80,13 @@ alter table public.work_items enable row level security;
 -- Admins: full CRUD on work_items
 create policy "Admins full access to work_items"
   on public.work_items for all to authenticated
-  using (
-    exists (
-      select 1 from public.users u
-      where u.id = auth.uid() and u.role = 'admin'
-    )
-  )
-  with check (
-    exists (
-      select 1 from public.users u
-      where u.id = auth.uid() and u.role = 'admin'
-    )
-  );
+  using (public.is_admin_user())
+  with check (public.is_admin_user());
 
--- Members: SELECT all work items (needed for cascade status computation)
+-- Members: SELECT own assigned work items only
 create policy "Members view all work items"
   on public.work_items for select to authenticated
-  using (true);
+  using (assigned_to = auth.uid());
 
 -- Members: UPDATE own assigned items only
 create policy "Members update own work items"
@@ -116,18 +114,8 @@ alter table public.dependencies enable row level security;
 -- Admins: full CRUD on dependencies
 create policy "Admins full access to dependencies"
   on public.dependencies for all to authenticated
-  using (
-    exists (
-      select 1 from public.users u
-      where u.id = auth.uid() and u.role = 'admin'
-    )
-  )
-  with check (
-    exists (
-      select 1 from public.users u
-      where u.id = auth.uid() and u.role = 'admin'
-    )
-  );
+  using (public.is_admin_user())
+  with check (public.is_admin_user());
 
 -- Members: NO access to dependencies (no policies = implicit deny)
 
