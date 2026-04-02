@@ -80,7 +80,7 @@ const FlowEdge = memo(
               pointerEvents: 'none',
             }}
           >
-            <span className="bg-surface-card border border-surface-border text-2xs text-ink-muted px-1.5 py-0.5 rounded-sm whitespace-nowrap">
+            <span className="bg-surface-card border border-surface-border text-xs text-ink-muted px-1.5 py-0.5 rounded-sm whitespace-nowrap">
               {labelText}
             </span>
           </div>

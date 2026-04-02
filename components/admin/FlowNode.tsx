@@ -16,7 +16,7 @@ export type FlowNode = Node<FlowNodeData, 'flowNode'>
 // Uses the exact tokens from NESTUP_UI_WAVE.md design system.
 
 const STATUS_BORDER: Record<WorkItem['status'], string> = {
-  blocked: 'border-status-blocked',
+  blocked: 'border-status-blockedBorder',
   'in-progress': 'border-status-progressBorder',
   done: 'border-status-doneBorder',
 }

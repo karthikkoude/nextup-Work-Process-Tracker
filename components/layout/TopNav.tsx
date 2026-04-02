@@ -48,7 +48,7 @@ export default function TopNav({ email, role }: TopNavProps) {
         <div className="flex items-center gap-3">
           <span className="text-sm text-ink-muted">{email}</span>
           <span
-            className={`inline-flex items-center rounded-full px-2 py-0.5 text-2xs font-semibold uppercase tracking-wide ${
+            className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold uppercase tracking-wide ${
               role === 'admin'
                 ? 'bg-brand-subtle text-brand'
                 : 'bg-surface-offset text-ink-muted'
